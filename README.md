@@ -11,5 +11,6 @@ $ go run main.go \
     -kubeconfig ~/.kube/minikube.yaml \
     -lock-namespace highlander-proxy \
     -lock-name demo \
-    -protocol tcp
+    -protocol tcp \
+    -remote-address host:port
 ```
