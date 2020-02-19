@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"bufio"
 	"context"
 	"net"
 )
@@ -11,10 +10,7 @@ func proxy(ctx context.Context, client, server net.Conn) {
 	go pipe(ctx, server, client)
 }
 
-func pipe(ctx context.Context, readerConn, writerConn net.Conn) {
-	reader := bufio.NewReader(readerConn)
-	writer := bufio.NewWriter(writerConn)
-
+func pipe(ctx context.Context, reader, writer net.Conn) {
 	for done := false; !done; {
 		data := make([]byte, 256)
 
@@ -34,6 +30,6 @@ func pipe(ctx context.Context, readerConn, writerConn net.Conn) {
 		}
 	}
 
-	_ = readerConn.Close()
-	_ = writerConn.Close()
+	_ = reader.Close()
+	_ = writer.Close()
 }

@@ -26,7 +26,7 @@ func (f *Dialer) Dial() (net.Conn, context.Context, error) {
 	if target == f.Identity {
 		target = f.RemoteAddress
 	}
-	log.Println("forwarding to ", target)
+	log.Println("forwarding to", target)
 
 	conn, err := net.Dial(f.Protocol, target)
 	if err != nil {
