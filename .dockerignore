@@ -1,0 +1,10 @@
+.idea/
+vendor/
+.dockerignore
+.gitignore
+.travis.yml
+CODE_OF_CONDUCT.md
+DCO
+Dockerfile
+LICENSE
+README.md

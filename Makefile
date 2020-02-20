@@ -1,3 +1,8 @@
+PROJECT ?= mjpitz--highlander-proxy
+IMAGE_NAME ?= mjpitz/highlander-proxy
+IMAGE_TAG ?= latest
+BUILDX_OPTS ?=
+
 default: install
 
 # moved out of deps to decrease build time
@@ -27,3 +32,11 @@ deploy:
 	mkdir -p bin
 	CGO_ENABLED=0 gox -ldflags='-w -s -extldflags "-static"' -os="windows darwin" -arch="amd64 386" -output="bin/{{.Dir}}_{{.OS}}_{{.Arch}}"
 	CGO_ENABLED=0 gox -ldflags='-w -s -extldflags "-static"' -os="linux" -arch="amd64 386 arm arm64" -output="bin/{{.Dir}}_{{.OS}}_{{.Arch}}"
+
+docker:
+	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+
+dockerx:
+	docker buildx create --name $(PROJECT) &>/dev/null || echo "$(PROJECT) project exists"
+	docker buildx use $(PROJECT)
+	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t $(IMAGE_NAME):$(IMAGE_TAG) . $(BUILDX_OPTS)
