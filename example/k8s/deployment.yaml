@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0%
+      maxSurge: 25%
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      serviceAccountName: demo
+      containers:
+        - name: leader
+          image: mjpitz/highlander-proxy:v0.0.2
+          imagePullPolicy: IfNotPresent
+          securityContext: {}
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+            - name: NAMESPACE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+          args:
+            - -bind-address
+            - $(POD_IP):8080
+            - -lock-namespace
+            - $(NAMESPACE_NAME)
+            - -lock-name
+            - demo
+            - -protocol
+            - tcp
+            - -remote-address
+            - localhost:8081
+        - name: main
+          image: kennethreitz/httpbin
+          imagePullPolicy: Always
+          command:
+            - gunicorn
+            - -b
+            - localhost:8081
+            - httpbin:app
+            - -k
+            - gevent
