@@ -3,20 +3,7 @@ package election
 import (
 	"context"
 	"sync"
-	"time"
 )
-
-// Config defines a generic configuration for managing leader election.
-type Config struct {
-	Context       context.Context
-	Identity      string
-	LockNamespace string
-	LockName      string
-
-	LeaseDuration time.Duration
-	RenewDeadline time.Duration
-	RetryPeriod   time.Duration
-}
 
 // NewLeader constructs a leader to be used along with a proxy.Server.
 func NewLeader() *Leader {
