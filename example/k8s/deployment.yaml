@@ -19,7 +19,7 @@ spec:
       serviceAccountName: demo
       containers:
         - name: leader
-          image: mjpitz/highlander-proxy:v0.0.2
+          image: mjpitz/highlander-proxy:v0.0.3
           imagePullPolicy: IfNotPresent
           securityContext: {}
           env:
@@ -46,6 +46,8 @@ spec:
             - tcp
             - -remote-address
             - localhost:8081
+            - -log-level
+            - debug
         - name: main
           image: kennethreitz/httpbin
           imagePullPolicy: Always
