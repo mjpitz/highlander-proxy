@@ -13,16 +13,18 @@ import (
 func TestPipe(t *testing.T) {
 	message := "Hello World!"
 
+	ctx, cancel := context.WithCancel(context.TODO())
+	defer cancel()
+
 	readerA, writerA := io.Pipe()
 	readerB, writerB := io.Pipe()
 
-	go proxy.Pipe(context.TODO(), readerA, writerB)
+	go proxy.Pipe(ctx, readerA, writerB)
 
 	nA, err := writerA.Write([]byte(message))
 	require.Nil(t, err)
 
 	data := make([]byte, nA)
-
 	nB, err := readerB.Read(data)
 	require.Nil(t, err)
 

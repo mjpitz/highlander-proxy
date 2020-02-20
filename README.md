@@ -49,3 +49,18 @@ The co-process was written to integrate with the `Lease` API for leader election
           - containerPort: 8080
             name: tcp
 ```
+
+In order to leverage this co-process, you will need to grant the process access to the `Lease` API.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: [name]
+rules:
+- apiGroups: ['coordination.k8s.io']
+  resources: ['leases']
+  verbs:     ['*']
+  resourceNames:
+  - [lock_name]
+```
