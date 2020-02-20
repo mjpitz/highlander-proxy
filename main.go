@@ -4,10 +4,6 @@ import (
 	"context"
 	"flag"
 	"log"
-	"net"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/mjpitz/highlander-proxy/internal/election"
@@ -44,20 +40,8 @@ func main() {
 
 	flag.Parse()
 
-	log.Println("listeninig on", bindAddress)
-	listener, err := net.Listen(protocol, bindAddress)
-	exitIff(err)
-
 	root, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-ch
-		log.Println("received termination, signaling shutdown")
-		cancel()
-	}()
 
 	electionConfig := &election.Config{
 		Context:       root,
@@ -72,19 +56,14 @@ func main() {
 	leader, err := k8s.NewElector(electionConfig, kubeconfig)
 	exitIff(err)
 
-	dialer := &proxy.Dialer{
-		Leader:        leader,
+	server := &proxy.Server{
 		Protocol:      protocol,
-		Identity:      bindAddress,
+		BindAddress:   bindAddress,
 		RemoteAddress: remoteAddress,
+		Leader:        leader,
 	}
 
-	connections := make(chan net.Conn, 10)
-
-	go proxy.Connect(root, listener, connections)
-	go proxy.Forward(root, dialer, connections)
-
-	select {
-	// let the workers be free
-	}
+	log.Println("listening on", bindAddress)
+	err = server.Serve()
+	exitIff(err)
 }

@@ -5,12 +5,10 @@ import (
 	"net"
 )
 
-func proxy(ctx context.Context, client, server net.Conn) {
-	go pipe(ctx, client, server)
-	go pipe(ctx, server, client)
-}
+func pipe(parent context.Context, reader, writer net.Conn) {
+	ctx, cancel := context.WithCancel(parent)
+	defer cancel()
 
-func pipe(ctx context.Context, reader, writer net.Conn) {
 	for done := false; !done; {
 		data := make([]byte, 256)
 
