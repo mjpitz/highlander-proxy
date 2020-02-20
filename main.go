@@ -23,20 +23,20 @@ func main() {
 	remoteAddress := ""
 	lockNamespace := ""
 	lockName := ""
-	leaseDuration := 60 * time.Second
-	renewDuration := 15 * time.Second
-	retryPeriod := 5 * time.Second
+	leaseDuration := 5 * time.Second
+	renewDuration := 2 * time.Second
+	retryPeriod := 1 * time.Second
 	kubeconfig := ""
 
-	flag.StringVar(&protocol, "protocol", protocol, "")
-	flag.StringVar(&bindAddress, "bind-address", bindAddress, "")
-	flag.StringVar(&remoteAddress, "remote-address", remoteAddress, "")
-	flag.StringVar(&lockNamespace, "lock-namespace", lockNamespace, "")
-	flag.StringVar(&lockName, "lock-name", lockName, "")
-	flag.DurationVar(&leaseDuration, "lease-duration", leaseDuration, "")
-	flag.DurationVar(&renewDuration, "renew-duration", renewDuration, "")
-	flag.DurationVar(&retryPeriod, "retry-period", retryPeriod, "")
-	flag.StringVar(&kubeconfig, "kubeconfig", kubeconfig, "")
+	flag.StringVar(&protocol, "protocol", protocol, "The network protocol to operate on. Either 'tcp' or 'udp'.")
+	flag.StringVar(&bindAddress, "bind-address", bindAddress, "The address to bind the proxy to.")
+	flag.StringVar(&remoteAddress, "remote-address", remoteAddress, "The destination address.")
+	flag.StringVar(&lockNamespace, "lock-namespace", lockNamespace, "The namespace for the lock.")
+	flag.StringVar(&lockName, "lock-name", lockName, "The name of the lock within the namespace.")
+	flag.DurationVar(&leaseDuration, "lease-duration", leaseDuration, "The duration a lock is held.")
+	flag.DurationVar(&renewDuration, "renew-duration", renewDuration, "The duration between lock renewal.")
+	flag.DurationVar(&retryPeriod, "retry-period", retryPeriod, "The duration between retries.")
+	flag.StringVar(&kubeconfig, "kubeconfig", kubeconfig, "Location of the kubeconfig file.")
 
 	flag.Parse()
 

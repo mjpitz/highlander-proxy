@@ -17,8 +17,8 @@ test:
 	golint -set_exit_status ./...
 	go test -v ./...
 
-install:
-	go install
+build:
+	CGO_ENABLED=0 go build -ldflags='-w -s -extldflags "-static"' .
 
 deploy:
 	mkdir -p bin
