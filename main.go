@@ -4,6 +4,10 @@ import (
 	"context"
 	"flag"
 	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/mjpitz/highlander-proxy/internal/election"
@@ -63,7 +67,19 @@ func main() {
 		Leader:        leader,
 	}
 
-	log.Println("listening on", bindAddress)
-	err = server.Serve()
+	listener, err := net.Listen(server.Protocol, server.BindAddress)
 	exitIff(err)
+
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-ch
+		log.Println("shutting down")
+		cancel()
+		time.Sleep(time.Second)
+		_ = listener.Close()
+	}()
+
+	log.Println("listening on", bindAddress)
+	server.Serve(listener)
 }

@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/mjpitz/highlander-proxy/internal/election"
 )
@@ -57,24 +54,12 @@ func (s *Server) handleConnection(client net.Conn) {
 }
 
 // Serve creates a listener for the configured protocol (tcp or udp)
-func (s *Server) Serve() error {
-	listener, err := net.Listen(s.Protocol, s.BindAddress)
-	if err != nil {
-		return err
-	}
-
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-ch
-		_ = listener.Close()
-	}()
-
+func (s *Server) Serve(listener net.Listener) {
 	for {
 		accepted, err := listener.Accept()
 		if err != nil {
 			// server shutdown
-			return nil
+			return
 		}
 
 		go s.handleConnection(accepted)
