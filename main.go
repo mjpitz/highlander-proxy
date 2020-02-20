@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/mjpitz/highlander-proxy/internal/election"
 	"github.com/mjpitz/highlander-proxy/internal/election/k8s"
 	"github.com/mjpitz/highlander-proxy/internal/proxy"
@@ -31,6 +33,7 @@ func main() {
 	renewDuration := 2 * time.Second
 	retryPeriod := 1 * time.Second
 	kubeconfig := ""
+	logLevel := "info"
 
 	flag.StringVar(&protocol, "protocol", protocol, "The network protocol to operate on. Either 'tcp' or 'udp'.")
 	flag.StringVar(&bindAddress, "bind-address", bindAddress, "The address to bind the proxy to.")
@@ -41,8 +44,14 @@ func main() {
 	flag.DurationVar(&renewDuration, "renew-duration", renewDuration, "The duration between lock renewal.")
 	flag.DurationVar(&retryPeriod, "retry-period", retryPeriod, "The duration between retries.")
 	flag.StringVar(&kubeconfig, "kubeconfig", kubeconfig, "Location of the kubeconfig file.")
+	flag.StringVar(&logLevel, "log-level", logLevel, "Verbosity of the log messages.")
 
 	flag.Parse()
+
+	level, err := logrus.ParseLevel(logLevel)
+	exitIff(err)
+
+	logrus.SetLevel(level)
 
 	root, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -74,12 +83,12 @@ func main() {
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-ch
-		log.Println("shutting down")
+		logrus.Infof("received shutdown signal, terminating process")
 		cancel()
 		time.Sleep(time.Second)
 		_ = listener.Close()
 	}()
 
-	log.Println("listening on", bindAddress)
+	logrus.Infof("listening on %s://%s", protocol, bindAddress)
 	server.Serve(listener)
 }

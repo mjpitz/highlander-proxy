@@ -3,8 +3,9 @@ package proxy
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/mjpitz/highlander-proxy/internal/election"
 )
@@ -35,16 +36,16 @@ func (s *Server) GetForwardAddress() (string, context.Context, error) {
 func (s *Server) handleConnection(client net.Conn) {
 	target, parent, err := s.GetForwardAddress()
 	if err != nil {
-		// no leader
+		logrus.Tracef("encountered error forwarding connection: %v", err)
 		_ = client.Close()
 		return
 	}
 
-	log.Println("forwarding to", target)
+	logrus.Debugf("forwarding to %s", target)
 
 	server, err := net.Dial(s.Protocol, target)
 	if err != nil {
-		// backend not reachable
+		logrus.Errorf("encountered error dialing %s: %v", target, err)
 		_ = client.Close()
 		return
 	}

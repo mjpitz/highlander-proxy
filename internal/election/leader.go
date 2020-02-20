@@ -3,6 +3,8 @@ package election
 import (
 	"context"
 	"sync"
+
+	"github.com/sirupsen/logrus"
 )
 
 // NewLeader constructs a leader to be used along with a proxy.Server.
@@ -37,6 +39,8 @@ func (l *Leader) Get() (string, context.Context, bool) {
 func (l *Leader) Update(leader string) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
+
+	logrus.Infof("new leader elected: %s", leader)
 
 	if l.cancel != nil {
 		l.cancel()

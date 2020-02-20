@@ -5,6 +5,8 @@ import (
 	"io"
 )
 
+// Pipe reads from the provider reader and writes data to the provider writer
+// until the underlying connections encounter an error.
 func Pipe(parent context.Context, reader io.ReadCloser, writer io.WriteCloser) {
 	ctx, cancel := context.WithCancel(parent)
 	defer cancel()
