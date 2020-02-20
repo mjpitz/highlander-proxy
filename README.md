@@ -1,31 +1,51 @@
 # highlander-proxy
 
-highlander-proxy is a simple network proxy that encapsulates leadership election semantics.
+highlander-proxy is a simple network proxy that encapsulates leadership election and forwarding semantics.
 
-## Try it out
+[![highlander-proxy](docs/assets/highlander-proxy.png)](docs/assets/highlander-proxy.png)
 
-Before trying this out, you must first pull down dependencies.
+## Status
 
-```
-$ go mod vendor
-```
+This project currently offers `v1alpha1` support.
+This includes:
 
-Once you've resolved dependencies, you should be able to spin up several proxies using Kubernetes.
+* Preliminary functional support, not advised for production workloads
+* Initial support for Kubernetes (future support for other platforms)
 
-```
-$ go run main.go \
-    -bind-address localhost:1234 \
-    -kubeconfig ~/.kube/minikube.yaml \
-    -lock-namespace highlander-proxy \
-    -lock-name demo \
-    -protocol tcp \
-    -remote-address host:port
+## Getting started on Kubernetes
 
-$ go run main.go \
-    -bind-address localhost:1235 \
-    -kubeconfig ~/.kube/minikube.yaml \
-    -lock-namespace highlander-proxy \
-    -lock-name demo \
-    -protocol tcp \
-    -remote-address host:port
+Getting started on Kubernetes is trivial.
+The co-process was written to integrate with the `Lease` API for leader election.
+
+```yaml
+    containers:
+      - name:  leader
+        image: mjpitz/highlander-proxy:latest
+        imagePullPolicy: Always
+        securityContext: {}
+        env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          - name: NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+        args:
+          - -bind-address
+          - $(POD_IP):8080
+          - -lock-namespace
+          - $(NAMESPACE_NAME)
+          - -lock-name
+          - [lock_name]
+          - -protocol
+          - tcp
+          - -remote-address
+          - [process_address]
+        ports:
+          - containerPort: 8080
+            name: tcp
 ```
