@@ -3,6 +3,7 @@ default: install
 # moved out of deps to decrease build time
 build-deps:
 	GO111MODULE=off go get -u golang.org/x/lint/golint
+	GO111MODULE=off go get -u github.com/mitchellh/gox
 	GO111MODULE=off go get -u oss.indeed.com/go/go-groups
 
 fmt:
