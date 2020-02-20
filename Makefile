@@ -40,3 +40,10 @@ dockerx:
 	docker buildx create --name $(PROJECT) &>/dev/null || echo "$(PROJECT) project exists"
 	docker buildx use $(PROJECT)
 	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t $(IMAGE_NAME):$(IMAGE_TAG) . $(BUILDX_OPTS)
+
+publish:
+	git checkout $(VERSION)
+	rm -rf bin/
+	make deploy
+	BUILDX_OPTS=$(BUILDX_OPTS) IMAGE_TAG=$(VERSION) make dockerx
+	BUILDX_OPTS=$(BUILDX_OPTS) IMAGE_TAG=latest make dockerx
