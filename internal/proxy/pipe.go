@@ -2,10 +2,10 @@ package proxy
 
 import (
 	"context"
-	"net"
+	"io"
 )
 
-func pipe(parent context.Context, reader, writer net.Conn) {
+func Pipe(parent context.Context, reader io.ReadCloser, writer io.WriteCloser) {
 	ctx, cancel := context.WithCancel(parent)
 	defer cancel()
 

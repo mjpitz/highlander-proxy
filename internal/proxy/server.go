@@ -49,8 +49,8 @@ func (s *Server) handleConnection(client net.Conn) {
 		return
 	}
 
-	go pipe(parent, client, server)
-	go pipe(parent, server, client)
+	go Pipe(parent, client, server)
+	go Pipe(parent, server, client)
 }
 
 // Serve creates a listener for the configured protocol (tcp or udp)
