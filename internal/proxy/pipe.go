@@ -3,6 +3,8 @@ package proxy
 import (
 	"context"
 	"io"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Pipe reads from the provider reader and writes data to the provider writer
@@ -16,10 +18,12 @@ func Pipe(parent context.Context, reader io.ReadCloser, writer io.WriteCloser) {
 
 		n, err := reader.Read(data)
 		if err != nil {
+			logrus.Tracef("encountered error reading from connection: %v", err)
 			break
 		}
 
 		if _, err := writer.Write(data[:n]); err != nil {
+			logrus.Tracef("encountered error writing to connection: %v", err)
 			break
 		}
 

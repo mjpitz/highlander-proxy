@@ -59,7 +59,7 @@ func (s *Server) Serve(listener net.Listener) {
 	for {
 		accepted, err := listener.Accept()
 		if err != nil {
-			// server shutdown
+			logrus.Debugf("no longer accepting connections: %v", err)
 			return
 		}
 
