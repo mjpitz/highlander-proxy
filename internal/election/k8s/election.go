@@ -14,6 +14,7 @@ import (
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
 )
 
+// NewElector creates a new Kubernetes based elector and returns a corresponding Leader.
 func NewElector(config *election.Config, kubeconfig string) (*election.Leader, error) {
 	var cfg *rest.Config
 	var err error

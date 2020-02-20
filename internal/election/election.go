@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Config defines a generic configuration for managing leader election.
 type Config struct {
 	Context       context.Context
 	Identity      string
@@ -17,12 +18,14 @@ type Config struct {
 	RetryPeriod   time.Duration
 }
 
+// NewLeader constructs a leader to be used along with a proxy.Server.
 func NewLeader() *Leader {
 	return &Leader{
 		mu: &sync.Mutex{},
 	}
 }
 
+// Leader encapsulates logic for tracking the current leader.
 type Leader struct {
 	mu *sync.Mutex
 
@@ -31,6 +34,7 @@ type Leader struct {
 	current string
 }
 
+// Get returns the current leader and their corresponding context.
 func (l *Leader) Get() (string, context.Context, bool) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -42,6 +46,7 @@ func (l *Leader) Get() (string, context.Context, bool) {
 	return l.current, l.ctx, true
 }
 
+// Update cancels the current context, then sets a new leader and context.
 func (l *Leader) Update(leader string) {
 	l.mu.Lock()
 	defer l.mu.Unlock()

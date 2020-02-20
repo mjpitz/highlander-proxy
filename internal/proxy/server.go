@@ -12,6 +12,7 @@ import (
 	"github.com/mjpitz/highlander-proxy/internal/election"
 )
 
+// Server defines a leader-aware proxy server.
 type Server struct {
 	Protocol      string
 	BindAddress   string
@@ -19,6 +20,7 @@ type Server struct {
 	Leader        *election.Leader
 }
 
+// GetForwardAddress returns the current address to forward to based on the current leadership.
 func (s *Server) GetForwardAddress() (string, context.Context, error) {
 	leader, ctx, ok := s.Leader.Get()
 	if !ok {
@@ -54,6 +56,7 @@ func (s *Server) handleConnection(client net.Conn) {
 	go pipe(parent, server, client)
 }
 
+// Serve creates a listener for the configured protocol (tcp or udp)
 func (s *Server) Serve() error {
 	listener, err := net.Listen(s.Protocol, s.BindAddress)
 	if err != nil {
