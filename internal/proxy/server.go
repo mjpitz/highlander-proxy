@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/mjpitz/highlander-proxy/internal/election"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Server defines a leader-aware proxy server.
 type Server struct {
 	Protocol      string
-	BindAddress   string
+	Identity      string
 	RemoteAddress string
 	Leader        *election.Leader
 }
@@ -26,7 +26,7 @@ func (s *Server) GetForwardAddress() (string, context.Context, error) {
 	}
 
 	target := leader
-	if target == s.BindAddress {
+	if target == s.Identity {
 		target = s.RemoteAddress
 	}
 

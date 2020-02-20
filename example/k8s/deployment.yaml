@@ -34,8 +34,10 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.namespace
           args:
-            - -bind-address
+            - -identity
             - $(POD_IP):8080
+            - -bind-address
+            - 0.0.0.0:8080
             - -lock-namespace
             - $(NAMESPACE_NAME)
             - -lock-name

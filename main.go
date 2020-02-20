@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/mjpitz/highlander-proxy/internal/election"
 	"github.com/mjpitz/highlander-proxy/internal/election/k8s"
 	"github.com/mjpitz/highlander-proxy/internal/proxy"
+
+	"github.com/sirupsen/logrus"
 )
 
 func exitIff(err error) {
@@ -25,6 +25,7 @@ func exitIff(err error) {
 
 func main() {
 	protocol := "tcp"
+	identity := ""
 	bindAddress := ""
 	remoteAddress := ""
 	lockNamespace := ""
@@ -36,6 +37,7 @@ func main() {
 	logLevel := "info"
 
 	flag.StringVar(&protocol, "protocol", protocol, "The network protocol to operate on. Either 'tcp' or 'udp'.")
+	flag.StringVar(&identity, "identity", identity, "The identity of this process (ip:port).")
 	flag.StringVar(&bindAddress, "bind-address", bindAddress, "The address to bind the proxy to.")
 	flag.StringVar(&remoteAddress, "remote-address", remoteAddress, "The destination address.")
 	flag.StringVar(&lockNamespace, "lock-namespace", lockNamespace, "The namespace for the lock.")
@@ -48,6 +50,10 @@ func main() {
 
 	flag.Parse()
 
+	if identity == "" {
+		identity = bindAddress
+	}
+
 	level, err := logrus.ParseLevel(logLevel)
 	exitIff(err)
 
@@ -58,7 +64,7 @@ func main() {
 
 	electionConfig := &election.Config{
 		Context:       root,
-		Identity:      bindAddress,
+		Identity:      identity,
 		LockNamespace: lockNamespace,
 		LockName:      lockName,
 		LeaseDuration: leaseDuration,
@@ -71,12 +77,12 @@ func main() {
 
 	server := &proxy.Server{
 		Protocol:      protocol,
-		BindAddress:   bindAddress,
+		Identity:      identity,
 		RemoteAddress: remoteAddress,
 		Leader:        leader,
 	}
 
-	listener, err := net.Listen(server.Protocol, server.BindAddress)
+	listener, err := net.Listen(protocol, bindAddress)
 	exitIff(err)
 
 	ch := make(chan os.Signal, 1)

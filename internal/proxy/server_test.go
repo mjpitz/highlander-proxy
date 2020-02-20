@@ -1,20 +1,22 @@
 package proxy_test
 
 import (
+	"testing"
+
 	"github.com/mjpitz/highlander-proxy/internal/election"
 	"github.com/mjpitz/highlander-proxy/internal/proxy"
+
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestServer(t *testing.T) {
 	leader := election.NewLeader()
 
 	server := &proxy.Server{
-		Protocol: "tcp",
-		BindAddress: "localhost:8080",
+		Protocol:      "tcp",
+		Identity:      "localhost:8080",
 		RemoteAddress: "localhost:8090",
-		Leader: leader,
+		Leader:        leader,
 	}
 
 	a, ctxa, err := server.GetForwardAddress()
