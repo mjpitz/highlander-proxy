@@ -4,7 +4,6 @@ go 1.13
 
 require (
 	github.com/evanphx/json-patch v4.2.0+incompatible // indirect
-	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/googleapis/gnostic v0.3.1 // indirect
@@ -12,7 +11,8 @@ require (
 	github.com/json-iterator/go v1.1.8 // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/sirupsen/logrus v1.4.2
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/cobra v0.0.7
+	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.3.0
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550 // indirect
 	golang.org/x/net v0.0.0-20191028085509-fe3aa8a45271 // indirect

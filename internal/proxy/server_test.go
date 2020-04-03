@@ -3,6 +3,7 @@ package proxy_test
 import (
 	"testing"
 
+	"github.com/mjpitz/highlander-proxy/internal/config"
 	"github.com/mjpitz/highlander-proxy/internal/election"
 	"github.com/mjpitz/highlander-proxy/internal/proxy"
 
@@ -12,35 +13,41 @@ import (
 func TestServer(t *testing.T) {
 	leader := election.NewLeader()
 
+	route := &config.Route{}
+	err := route.Set("tcp://localhost:8080|tcp://localhost:8090")
+	require.Nil(t, err)
+
 	server := &proxy.Server{
-		Protocol:      "tcp",
-		Identity:      "localhost:8080",
-		RemoteAddress: "localhost:8090",
-		Leader:        leader,
+		Route:    route,
+		Identity: "8.0.8.0",
+		Leader:   leader,
 	}
 
-	a, ctxa, err := server.GetForwardAddress()
+	aproto, a, ctxa, err := server.GetForwardAddress()
 	require.NotNil(t, err)
 	require.Equal(t, "no leader elected", err.Error())
 	require.Nil(t, ctxa)
+	require.Equal(t, "", aproto)
 	require.Equal(t, "", a)
 
 	// when I'm not leader, make sure I point to the leader
 
-	leader.Update("localhost:1234")
+	leader.Update("1.2.3.4")
 
-	b, ctxb, err := server.GetForwardAddress()
+	bproto, b, ctxb, err := server.GetForwardAddress()
 	require.Nil(t, err)
 	require.NotNil(t, ctxb)
-	require.Equal(t, "localhost:1234", b)
+	require.Equal(t, "tcp", bproto)
+	require.Equal(t, "1.2.3.4:8080", b)
 
 	// when I'm leader, make sure I point to my remote
 
-	leader.Update("localhost:8080")
+	leader.Update("8.0.8.0")
 
-	c, ctxc, err := server.GetForwardAddress()
+	cproto, c, ctxc, err := server.GetForwardAddress()
 	require.Nil(t, err)
 	require.NotNil(t, ctxc)
+	require.Equal(t, "tcp", cproto)
 	require.Equal(t, "localhost:8090", c)
 
 	select {
