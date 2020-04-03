@@ -19,8 +19,8 @@ spec:
       serviceAccountName: demo
       containers:
         - name: leader
-          image: mjpitz/highlander-proxy:v0.0.3
-          imagePullPolicy: IfNotPresent
+          image: mjpitz/highlander-proxy:latest
+          imagePullPolicy: Always
           securityContext: {}
           env:
             - name: POD_IP
@@ -34,20 +34,21 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.namespace
           args:
-            - -identity
-            - $(POD_IP):8080
-            - -bind-address
-            - 0.0.0.0:8080
-            - -lock-namespace
-            - $(NAMESPACE_NAME)
-            - -lock-name
-            - demo
-            - -protocol
-            - tcp
-            - -remote-address
-            - localhost:8081
-            - -log-level
+            - --identity
+            - $(POD_IP)
+            - --routes
+            - tcp://0.0.0.0:8080|tcp://localhost:8081
+            - --routes
+            - tcp://0.0.0.0:9090|tcp://localhost:8081
+            # Debug Configuration
+            - --log-level
             - debug
+            # Kubernetes Configuration
+            - --lock-namespace
+            - $(NAMESPACE_NAME)
+            - --lock-name
+            - demo
+
         - name: main
           image: kennethreitz/httpbin
           imagePullPolicy: Always
