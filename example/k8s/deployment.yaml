@@ -20,7 +20,7 @@ spec:
       containers:
         - name: leader
           image: mjpitz/highlander-proxy:latest
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           securityContext: {}
           env:
             - name: POD_IP
