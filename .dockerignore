@@ -6,5 +6,6 @@ vendor/
 CODE_OF_CONDUCT.md
 DCO
 Dockerfile
+highlander-proxy
 LICENSE
 README.md

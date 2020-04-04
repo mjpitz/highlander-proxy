@@ -20,7 +20,7 @@ spec:
       containers:
         - name: leader
           image: mjpitz/highlander-proxy:latest
-          imagePullPolicy: Always
+          imagePullPolicy: Never
           securityContext: {}
           env:
             - name: POD_IP
@@ -48,7 +48,6 @@ spec:
             - $(NAMESPACE_NAME)
             - --lock-name
             - demo
-
         - name: main
           image: kennethreitz/httpbin
           imagePullPolicy: Always
