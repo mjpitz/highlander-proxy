@@ -35,16 +35,14 @@ The co-process was written to integrate with the `Lease` API for leader election
                 apiVersion: v1
                 fieldPath: metadata.namespace
         args:
-          - -bind-address
-          - $(POD_IP):8080
-          - -lock-namespace
+          - --identity
+          - $(POD_IP)
+          - --routes
+          - tcp://0.0.0.0:8080|tcp://[remote_address]
+          - --lock-namespace
           - $(NAMESPACE_NAME)
-          - -lock-name
+          - --lock-name
           - [lock_name]
-          - -protocol
-          - tcp
-          - -remote-address
-          - [process_address]
         ports:
           - containerPort: 8080
             name: tcp
