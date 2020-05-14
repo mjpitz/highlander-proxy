@@ -70,11 +70,10 @@ func (s *Server) handleConnection(client net.Conn) {
 func (s *Server) Serve(listener net.Listener, stopCh chan struct{}) {
 	defer listener.Close()
 
-	for done := false; !done; {
+	for {
 		select {
 		case <-stopCh:
-			done = true
-			break
+			return
 		default:
 			accepted, err := listener.Accept()
 			if err != nil {

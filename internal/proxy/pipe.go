@@ -2,8 +2,9 @@ package proxy
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	"io"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Pipe reads from the provider reader and writes data to the provider writer
