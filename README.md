@@ -1,5 +1,5 @@
 # highlander-proxy
-![Google Analytics](https://www.google-analytics.com/collect?v=1&tid=UA-172921913-1&cid=555&t=event&ec=repo&ea=open&dp=mjpitz%2Fhighlander-proxy&dt=mjpitz%2Fhighlander-proxy)
+![Google Analytics](https://www.google-analytics.com/collect?v=1&tid=UA-172921913-1&cid=555&t=pageview&ec=repo&ea=open&dp=highlander-proxy&dt=highlander-proxy)
 
 highlander-proxy is a simple network proxy that encapsulates leadership election and forwarding semantics.
 
